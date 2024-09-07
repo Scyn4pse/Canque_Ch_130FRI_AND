@@ -1,6 +1,8 @@
 package com.donate.simplecalculator
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.util.SparseBooleanArray
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
@@ -16,8 +18,10 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.toSpannable
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,9 +67,32 @@ class MainActivity : AppCompatActivity() {
 
                 // Retrieve CheckBox and set its checked state
                 val checkBox = view.findViewById<CheckBox>(R.id.checkBox)
-                checkBox.isChecked = checkedStates.get(position, false)
+                val textView = view.findViewById<TextView>(R.id.textView)
+                val isChecked = checkedStates.get(position, false)
+
+                checkBox.isChecked = isChecked
+
+                // Apply strikethrough if checked
+                val taskText = items[position]
+                textView.text = if (isChecked) {
+                    taskText.toSpannable().apply {
+                        setSpan(StrikethroughSpan(), 0, length, 0)
+                    }
+                } else {
+                    taskText
+                }
+
                 checkBox.setOnCheckedChangeListener { _, isChecked ->
                     checkedStates.put(position, isChecked)
+                    // Update text view strikethrough based on the CheckBox state
+                    val taskText = items[position]
+                    textView.text = if (isChecked) {
+                        taskText.toSpannable().apply {
+                            setSpan(StrikethroughSpan(), 0, length, 0)
+                        }
+                    } else {
+                        taskText
+                    }
                 }
 
                 view.setOnTouchListener { v, event ->

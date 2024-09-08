@@ -2,11 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:background="@drawable/bg_lightgreencorners"
     android:padding="8dp">
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
+        android:buttonTint="@color/black"
         android:layout_height="wrap_content" />
 
     <ImageView
@@ -21,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/checkBox"
+        android:textColor="@color/black"
         android:layout_marginStart="8dp"
         android:layout_centerVertical="true" />
 </RelativeLayout>

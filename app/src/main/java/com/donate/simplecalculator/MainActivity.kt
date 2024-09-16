@@ -1,84 +1,82 @@
 package com.donate.simplecalculator
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var editTextNumber1: EditText
-    private lateinit var editTextNumber2: EditText
-    private lateinit var textViewResult: TextView
-    private lateinit var btnAdd: Button
-    private lateinit var btnSubtract: Button
-    private lateinit var btnMultiply: Button
-    private lateinit var btnDivide: Button
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+    private lateinit var hamburgerMenu: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initializeUIComponents()
-        setButtonListeners()
-
-    }
-
-    private fun initializeUIComponents() {
-        editTextNumber1 = findViewById(R.id.editTextNumber1)
-        editTextNumber2 = findViewById(R.id.editTextNumber2)
-        textViewResult = findViewById(R.id.textViewResult)
-        btnAdd = findViewById(R.id.btnAdd)
-        btnSubtract = findViewById(R.id.btnSubtract)
-        btnMultiply = findViewById(R.id.btnMultiply)
-        btnDivide = findViewById(R.id.btnDivide)
-    }
-
-    private fun setButtonListeners() {
-        btnAdd.setOnClickListener {
-            displayResult(calculate(editTextNumber1.text.toString(), editTextNumber2.text.toString(), '+'))
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.content_frame, DefaultFragment())
+                .commit()
         }
 
-        btnSubtract.setOnClickListener {
-            displayResult(calculate(editTextNumber1.text.toString(), editTextNumber2.text.toString(), '-'))
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+        hamburgerMenu = findViewById(R.id.hamburger_menu)
+
+        hamburgerMenu.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        btnMultiply.setOnClickListener {
-            displayResult(calculate(editTextNumber1.text.toString(), editTextNumber2.text.toString(), '*'))
-        }
-
-        btnDivide.setOnClickListener {
-            displayResult(calculate(editTextNumber1.text.toString(), editTextNumber2.text.toString(), '/'))
-        }
-    }
-
-    private fun calculate(num1Str: String, num2Str: String, operation: Char): Double? {
-        val num1 = num1Str.toDoubleOrNull()
-        val num2 = num2Str.toDoubleOrNull()
-
-        return if (num1 != null && num2 != null) {
-            when (operation) {
-                '+' -> num1 + num2
-                '-' -> num1 - num2
-                '*' -> num1 * num2
-                '/' -> if (num2 != 0.0) num1 / num2 else null
-                else -> null
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_fragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, FirstFragment())
+                        .commit()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_dialog -> {
+                    showDialog()
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_exit -> {
+                    // Do nothing; submenu will handle the next click
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_confirm_exit -> {
+                    finish()
+                    true
+                }
+                else -> false
             }
-        } else {
-            null
         }
     }
 
-    private fun displayResult(result: Double?) {
-        textViewResult.text = when {
-            result == null -> "Invalid input"
-            result % 1 == 0.0 -> result.toInt().toString()
-            else -> String.format("%.2f", result)
-        }
+    private fun showDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Dialog Title")
+            .setMessage("This is a message")
+            .setPositiveButton("Go to Fragment") { dialog, _ ->
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, FirstFragment())
+                    .commit()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Go to Exit") { dialog, _ ->
+                drawerLayout.openDrawer(GravityCompat.START)
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
 }

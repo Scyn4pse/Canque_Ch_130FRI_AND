@@ -3,6 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="Blue">#009688</color>
+    <color name="Grey">#e3e3e3</color>
+    <color name="darkGrey">#3e3e3e</color>
     <color name="material_dynamic_secondary50">#FF6200EE</color> <!-- Replace with the color code you want -->
 
 </resources>
